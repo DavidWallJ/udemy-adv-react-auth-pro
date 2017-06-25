@@ -2,6 +2,7 @@
  * Created by david on 6/23/17.
  */
 // Advanced React and Redux | Udemy | Auth
+  // server side authentication
 
 const express = require('express');
 const http = require('http');
