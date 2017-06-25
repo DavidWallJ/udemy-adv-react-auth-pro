@@ -14,6 +14,7 @@ const LocalStrategy = require('passport-local');
 // when the user first access the site they won't have a 'token' we'll need to authenticate with password and email
 // LocalStrategy by default accepts a 'usernameField' from the request body but we want 'email'
 // password is already default
+// * done here is a passport callback. it will pass the user on as req.user
 const localOptions = { usernameField: 'email' };
 const localLogin = new LocalStrategy(localOptions, function (email, password, done) {
   // verify this email and password, call done with the user
@@ -25,6 +26,12 @@ const localLogin = new LocalStrategy(localOptions, function (email, password, do
     if (!user) { return done(null, false); }
 
     // compare passwords but first we have to decrypt the password stored in the db
+    user.comparePassword(password, function(err, isMatch) {
+      if (err) { return done(err); }
+      if (!isMatch) { return done(null, false); }
+
+      return done(null, user);
+    });
   });
 });
 
@@ -58,3 +65,4 @@ const jwtLogin = new JwtStrategy(jwtOptions, function (payload, done) {
 
 // tell passport to use this strategy
 passport.use(jwtLogin);
+passport.use(localLogin);
